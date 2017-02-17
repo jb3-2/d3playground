@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--suppress ES6ModulesDependencies -->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Life in weeks</title>
+    <style>
+        body {
+            font: 10px sans-serif;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: grey;
+        }
+
+        .chart {
+            background-color: lightgrey;
+            padding: 30px;
+        }
+
+        div.tooltip {
+            position: absolute;
+            text-align: center;
+            width: 120px;
+            height: 35px;
+            padding: 2px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+<h2>Life in weeks</h2>
+<svg class="chart"></svg>
+<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+  const chartWidth = 800;
+  const chartHeight = 1000;
+
+  const columnCount = 52;
+  const rowCount = 91;
+
+    const periods = 
+    [
+        {toWeek: 5*52, description: 'Fun @ Home', color: '#f7fcfd'},
+        {toWeek: 7*52, description: 'Kindergarten', color: '#e5f5f9'},
+        {toWeek: 12*52, description: 'Primary School', color: '#ccece6'},
+        {toWeek: 15*52, description: 'Secondary School', color: '#99d8c9'},
+        {toWeek: 18*52, description: 'Gymnasium', color: '#66c2a4'},
+        {toWeek: 23*52, description: 'University', color: '#41ae76'},
+        {toWeek: 30*52+10, description: 'Fun @ IT Job', color: '238b45'},
+        {toWeek: 30*52+11, description: 'Fun with firstborn', color: 'yellow'},
+        {toWeek: 33*52+15, description: 'Fun @ IT Job', color: '#238b45'},    
+        {toWeek: 33*52+16, description: 'Fun with secondborn', color: 'yellow'},     
+        {toWeek: 38*52, description: 'Fun @ IT Job', color: '#238b45'},        
+        {toWeek: 41*52+6, description: 'Fun @ Statistics Job', color: '#006d2c'},
+        {toWeek: 41*52+7, description: 'Fun right now with d3.js', color: 'red'},
+        {toWeek: rowCount*52, description: 'Fun @ Future', color: 'lightblue'},
+    ];
+
+
+  const xScale = d3.scaleBand()
+    .domain(d3.range(0, columnCount))
+    .range([0, chartWidth])
+    .padding(0.1);
+
+  const yScale = d3.scaleBand()
+    .domain(d3.range(0, rowCount))
+    .range([0, chartHeight])
+    .padding(0.1);
+
+  const svg = d3.select(".chart")
+    .attr("width", chartWidth)
+    .attr("height", chartHeight)
+    .append("g");
+
+  const data = d3.range(0, columnCount * rowCount);
+
+
+var tooltipDiv = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+  svg.selectAll("rect")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("x", d => xScale(d % columnCount))
+    .attr("y", d => yScale(Math.floor(d / columnCount)))
+    .attr("width", xScale.bandwidth())
+    .attr("height", yScale.bandwidth())
+    .style("fill", d => findPeriod(d).color)
+    .style("stroke", "lightsteelblue")
+    //tooltip source: https://bl.ocks.org/d3noob/257c360b3650b9f0a52dd8257d7a2d73
+    .on("mouseover", function(d) {
+        tooltipDiv.transition()
+            .duration(200)
+            .style("opacity", .9);
+        tooltipDiv.html('Week ' + d + ':<br/>' + findPeriod(d).description)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px");
+        })
+    .on("mouseout", function(d) {
+        tooltipDiv.transition()
+            .duration(500)
+            .style("opacity", 0);
+        });
+
+const yAxis = d3.axisLeft(yScale);
+    svg.append('g').call(yAxis);        
+
+const xAxis = d3.axisTop(xScale);
+    svg.append('g').call(xAxis);
+
+
+function findPeriod(week){
+    function isInPeriod(d){
+        return week < d.toWeek;
+    }
+    return periods.find(isInPeriod);
+};
+</script>
+
+</body>
+</html>
