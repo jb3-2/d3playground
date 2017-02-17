@@ -15,7 +15,7 @@
         }
 
         .chart {
-            background-color: lightgrey;
+            /*background-color: lightgrey;*/
             padding: 30px;
         }
 
@@ -48,25 +48,25 @@
 
     const periods = 
     [
-        {toWeek: 5*52, description: 'Fun @ Home', color: '#f7fcfd'},
-        {toWeek: 7*52, description: 'Kindergarten', color: '#e5f5f9'},
-        {toWeek: 12*52, description: 'Primary School', color: '#ccece6'},
-        {toWeek: 15*52, description: 'Secondary School', color: '#99d8c9'},
-        {toWeek: 18*52, description: 'Gymnasium', color: '#66c2a4'},
-        {toWeek: 23*52, description: 'University', color: '#41ae76'},
-        {toWeek: 30*52+10, description: 'Fun @ IT Job', color: '238b45'},
+        {toWeek: 5*52, description: 'Fun @ Home', color: '#a6cee3'},
+        {toWeek: 7*52, description: 'Fun @ Kindergarten', color: '#1f78b4'},
+        {toWeek: 12*52, description: 'Fun @ Primary School', color: '#b2df8a'},
+        {toWeek: 15*52, description: 'Fun @ Secondary School', color: '#33a02c'},
+        {toWeek: 18*52, description: 'Fun @ Gymnasium', color: '#fb9a99'},
+        {toWeek: 23*52, description: 'Fun @ University', color: '#e31a1c'},
+        {toWeek: 30*52+10, description: 'Fun @ IT Job', color: 'fdbf6f'},
         {toWeek: 30*52+11, description: 'Fun with firstborn', color: 'yellow'},
-        {toWeek: 33*52+15, description: 'Fun @ IT Job', color: '#238b45'},    
+        {toWeek: 33*52+15, description: 'Fun @ IT Job', color: '#fdbf6f'},    
         {toWeek: 33*52+16, description: 'Fun with secondborn', color: 'yellow'},     
-        {toWeek: 38*52, description: 'Fun @ IT Job', color: '#238b45'},        
-        {toWeek: 41*52+6, description: 'Fun @ Statistics Job', color: '#006d2c'},
+        {toWeek: 38*52, description: 'Fun @ IT Job', color: '#fdbf6f'},        
+        {toWeek: 41*52+6, description: 'Fun @ Statistics Job', color: '#ff7f00'},
         {toWeek: 41*52+7, description: 'Fun right now with d3.js', color: 'red'},
-        {toWeek: rowCount*52, description: 'Fun @ Future', color: 'lightblue'},
+        {toWeek: rowCount*52, description: 'Fun @ Future', color: 'cab2d6'},
     ];
 
 
   const xScale = d3.scaleBand()
-    .domain(d3.range(0, columnCount))
+    .domain(d3.range(1, columnCount+1))
     .range([0, chartWidth])
     .padding(0.1);
 
@@ -91,7 +91,7 @@ var tooltipDiv = d3.select("body").append("div")
     .data(data)
     .enter()
     .append("rect")
-    .attr("x", d => xScale(d % columnCount))
+    .attr("x", d => xScale((d % columnCount)+1)) //weeks need to start at 1
     .attr("y", d => yScale(Math.floor(d / columnCount)))
     .attr("width", xScale.bandwidth())
     .attr("height", yScale.bandwidth())
@@ -115,16 +115,16 @@ var tooltipDiv = d3.select("body").append("div")
 const yAxis = d3.axisLeft(yScale);
     svg.append('g').call(yAxis);        
 
-const xAxis = d3.axisTop(xScale);
+const xTicks = xScale.domain().filter(d => d % 4 == 0 || d == 1);  
+
+const xAxis = d3.axisTop(xScale).tickValues(xTicks);
     svg.append('g').call(xAxis);
 
 
 function findPeriod(week){
-    function isInPeriod(d){
-        return week < d.toWeek;
-    }
-    return periods.find(isInPeriod);
+    return periods.find(period => week < period.toWeek);
 };
+
 </script>
 
 </body>
