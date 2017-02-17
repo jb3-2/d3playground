@@ -1,9 +1,7 @@
 /* 
-Playing around with d3.js, see https://square.github.io/intro-to-d3
-
 global d3
 */
-
+//Playing around with d3.js, see https://square.github.io/intro-to-d3
 // first example: domains, scales, axes
 
 var numbers = [ 5, 4, 10, 1 ],
@@ -55,10 +53,12 @@ var svg = d3.select('body')
 var rects = svg.selectAll('rect')
     .data(sales);
 var newRects = rects.enter();
-
+/*
 var maxCount = d3.max(sales, function(d, i) {
   return d.count;
 });
+*/
+var maxCount = d3.max(sales, d => d.count);
 
 var x = d3.scaleLinear()
   .range([0, 300])
@@ -66,25 +66,19 @@ var x = d3.scaleLinear()
 
 var y = d3.scaleBand()
     .rangeRound([0, 75])
-    .domain(sales.map(function(d, i) {
-        return d.product;
-    }));
+    .domain(sales.map(d => d.product));
 
 newRects.append('rect')
   .attr('x', x(0))
-  .attr('y', function(d, i) {
-    return y(d.product);
-  })
+  .attr('y', d => y(d.product))
   .attr('height', y.bandwidth())
-  .attr('width', function(d, i) {
-    return x(d.count);
-  });
+  .attr('width', d => x(d.count));
 
 
 sales.pop();
 //the following line does not work for me
-//rects = rects.data(sales);
-rects = svg.selectAll('rect').data(sales);
-var rectsToRemove = rects.exit();
+const rects2 = rects.data(sales);
+//rects = svg.selectAll('rect').data(sales);
+var rectsToRemove = rects2.exit();
 rectsToRemove.remove(); 
 
