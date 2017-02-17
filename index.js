@@ -137,3 +137,47 @@ var toggleButton = d3.select('body')
   .attr('onClick', 'toggle()')
   .text('toggle')
   ;
+
+
+d3.select('body')
+    .append('br');
+
+
+//Pie chart sample
+
+var pie = d3.pie()
+  .value(d => d.count);
+var slices = pie(sales);
+
+var arc = d3.arc()
+  .innerRadius(0)
+  .outerRadius(50);
+
+// helper that returns a color based on an ID
+var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+var svgpie = d3.select('body').append('svg');
+var g = svgpie.append('g')
+  .attr('transform', 'translate(200, 50)')
+
+g.selectAll('path.slice')
+  .data(slices)
+    .enter()
+      .append('path')
+        .attr('class', 'slice')
+        .attr('d', arc)
+        .attr('fill', d => color(d.data.product));
+
+// building a legend is as simple as binding
+// more elements to the same data. in this case,
+// <text> tags
+svgpie.append('g')
+  .attr('class', 'legend')
+    .selectAll('text')
+    .data(slices)
+      .enter()
+        .append('text')
+          .text(d => '\u25cf ' + d.data.product)
+          .attr('fill', d => color(d.data.product))
+          .attr('y', (d, i) => 20 * (i + 1));
+
